@@ -1,16 +1,13 @@
 package com.patricknymark;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server implements Runnable {
-    private Socket socket;
     private ServerSocket server;
     private Thread thread;
-    private BufferedReader inputStream;
+    private ServerThread client;
 
     public Server(int port) {
         System.out.println("Server starting on port: " + port);
@@ -31,32 +28,22 @@ public class Server implements Runnable {
         while(thread != null) {
             try {
                 System.out.println("Waiting for a client ...");
-                socket = server.accept();
-                System.out.println("Client connection established: " + socket);
-
-                open();
-                boolean done = false;
-                while (!done) {
-                    try {
-                        String input = inputStream.readLine();
-                        System.out.println(input);
-                        done = input.equalsIgnoreCase("exit");
-                    } catch (IOException e) {
-                        done = true;
-                    }
-                }
+                addThread(server.accept());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
-
-
     }
 
-    public void open() throws IOException {
-        inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
+    public void addThread(Socket socket) {
+        System.out.println("Client accepted: " + socket);
+        client = new ServerThread(this, socket);
+        try {
+            client.open();
+            client.start();
+        } catch(IOException ioe) {
+            System.out.println("Error opening thread: " + ioe);
+        }
     }
 
     public void start() {
@@ -65,6 +52,7 @@ public class Server implements Runnable {
             thread.start();
         }
     }
+
 
     public static void main(String[] args) {
         Server server = new Server(5000);
