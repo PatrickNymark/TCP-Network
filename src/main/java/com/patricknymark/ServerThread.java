@@ -31,7 +31,7 @@ public class ServerThread extends Thread {
                 System.out.println(input);
             }
 
-            System.out.println("Server Thread " + ID + " closed");
+            System.out.println(ConsoleColor.ANSI_RED + "Server Thread " + ID + " closed");
             close();
         } catch (IOException e) {
             e.printStackTrace();
