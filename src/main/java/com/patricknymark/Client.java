@@ -12,11 +12,11 @@ public class Client {
     private PrintWriter outputStream;
 
     public Client(String ip, int port) {
-        System.out.println("Establishing connection. Please wait ...");
+        System.out.println(ConsoleColor.ANSI_BLUE + "Establishing connection. Please wait ...");
 
         try {
             socket = new Socket(ip, port);
-            System.out.println("Connected: " + socket);
+            System.out.println(ConsoleColor.ANSI_GREEN + "Connected: " + socket);
             start();
         } catch (IOException e) {
             System.out.println("Unexpected exception: " + e.getMessage());

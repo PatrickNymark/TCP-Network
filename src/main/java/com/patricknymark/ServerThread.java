@@ -19,7 +19,8 @@ public class ServerThread extends Thread {
     }
 
     public void run() {
-        System.out.println("Server Thread " + ID + " running.");
+        System.out.println(ConsoleColor.ANSI_GREEN + "Server Thread " + ID + " running.");
+        System.out.print(ConsoleColor.ANSI_RESET);
         try {
             String input;
             while((input = inputStream.readLine()) != null) {
