@@ -6,9 +6,10 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server {
+public class Server implements Runnable {
     private Socket socket;
     private ServerSocket server;
+    private Thread thread;
     private BufferedReader inputStream;
 
     public Server(int port) {
@@ -17,23 +18,7 @@ public class Server {
         try {
             server = new ServerSocket(port);
             System.out.println("Server started: " + server);
-
-            System.out.println("Waiting for a client ...");
-
-            socket = server.accept();
-            System.out.println("Client connection established: " + socket);
-
-            open();
-            boolean done = false;
-            while (!done) {
-                try {
-                    String input = inputStream.readLine();
-                    System.out.println(input);
-                    done = input.equalsIgnoreCase("exit");
-                } catch (IOException e) {
-                    done = true;
-                }
-            }
+            start();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -41,8 +26,44 @@ public class Server {
 
     }
 
+    @Override
+    public void run() {
+        while(thread != null) {
+            try {
+                System.out.println("Waiting for a client ...");
+                socket = server.accept();
+                System.out.println("Client connection established: " + socket);
+
+                open();
+                boolean done = false;
+                while (!done) {
+                    try {
+                        String input = inputStream.readLine();
+                        System.out.println(input);
+                        done = input.equalsIgnoreCase("exit");
+                    } catch (IOException e) {
+                        done = true;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+    }
+
     public void open() throws IOException {
         inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+    }
+
+    public void start() {
+        if (thread == null) {
+            thread = new Thread(this);
+            thread.start();
+        }
     }
 
     public static void main(String[] args) {
